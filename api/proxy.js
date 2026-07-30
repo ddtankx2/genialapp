@@ -2,7 +2,6 @@ import http from 'http';
 import https from 'https';
 
 export default async function handler(req, res) {
-  // Cabeçalhos para liberar CORS total no navegador
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,14 +10,21 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { url } = req.query;
+  let { url } = req.query;
 
   if (!url) {
     return res.status(400).json({ error: 'URL necessária' });
   }
 
   try {
-    const targetUrl = new URL(decodeURIComponent(url));
+    let targetUrlString = decodeURIComponent(url);
+
+    // Garante protocolo HTTP se o usuário/frontend não enviou
+    if (!targetUrlString.startsWith('http://') && !targetUrlString.startsWith('https://')) {
+      targetUrlString = `http://${targetUrlString}`;
+    }
+
+    const targetUrl = new URL(targetUrlString);
     const client = targetUrl.protocol === 'https:' ? https : http;
 
     const options = {
@@ -29,7 +35,6 @@ export default async function handler(req, res) {
       },
     };
 
-    // Faz a requisição HTTP direta de baixo nível
     const proxyReq = client.request(targetUrl, options, (proxyRes) => {
       let data = '';
 
@@ -38,14 +43,14 @@ export default async function handler(req, res) {
       });
 
       proxyRes.on('end', () => {
-        const contentType = proxyRes.headers['content-type'] || 'text/plain';
+        const contentType = proxyRes.headers['content-type'] || 'application/json';
         res.setHeader('Content-Type', contentType);
         return res.status(proxyRes.statusCode).send(data);
       });
     });
 
     proxyReq.on('error', (err) => {
-      console.error('Erro na requisição proxy:', err);
+      console.error('Erro de conexão:', err);
       return res.status(500).json({ error: 'Erro ao conectar no servidor IPTV', details: err.message });
     });
 
