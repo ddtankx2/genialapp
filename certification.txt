@@ -1,0 +1,24 @@
+---------------------------------------------------
+Here are the ownership and the certification details
+of the Genial Play 1.0
+---------------------------------------------------
+
+app_name - 						Genial Play
+app_alias - 					genialplay
+app_author_name - 				My Company
+app_author_organizational - 	My Company
+app_author_organization - 		My Company
+app_author_locality - 			My Company
+app_author_state - 				Mato Grosso
+app_author_country - 			Brazil
+app_password - 					02vmMNjgvjh4
+app_versionName - 				versionName "1.0"
+app_versionCode - 				100
+
+---------------------------------------------------
+The certification was created by WebIntoApp.com at
+the Thursday 30th of July 2026 01:43:20 AM
+
+https://webintoapp.com
+---------------------------------------------------
+
