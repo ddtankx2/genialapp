@@ -22,9 +22,9 @@ import {
 const fetchWithProxy = async (url: string) => {
   if (url.startsWith('http://')) {
     const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
-    return fetchWithProxy(proxyUrl);
+    return window.fetch(proxyUrl);
   }
-  return fetchWithProxy(url);
+  return window.fetch(url);
 };
 export function sanitizeXtreamUrl(url: string): string {
   if (!url) return '';
