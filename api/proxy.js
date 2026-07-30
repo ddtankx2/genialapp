@@ -1,66 +1,39 @@
-import http from 'http';
-import https from 'https';
-
 export default async function handler(req, res) {
+  // Configura CORS total para o frontend
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', '*');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Captura o parâmetro 'url' da requisição
-  const targetParam = req.query.url;
+  const { url } = req.query;
 
-  if (!targetParam) {
-    return res.status(400).json({ error: 'URL necessária' });
+  if (!url) {
+    return res.status(400).json({ error: 'URL não fornecida' });
   }
 
   try {
-    const targetUrlString = decodeURIComponent(targetParam);
-    const targetUrl = new URL(targetUrlString);
-    const client = targetUrl.protocol === 'https:' ? https : http;
+    const targetUrl = decodeURIComponent(url);
 
-    const options = {
-      hostname: targetUrl.hostname,
-      port: targetUrl.port || (targetUrl.protocol === 'https:' ? 443 : 80),
-      path: targetUrl.pathname + targetUrl.search,
+    // Faz a requisição seguindo redirecionamentos (redirect: 'follow')
+    const response = await fetch(targetUrl, {
       method: req.method,
       headers: {
         'User-Agent': 'IPTVSmarters/3.1.5 (Android)',
         'Accept': '*/*',
-        'Host': targetUrl.hostname
       },
-      timeout: 10000 // Timeout de 10 segundos
-    };
-
-    const proxyReq = client.request(options, (proxyRes) => {
-      // Trata redirecionamentos (HTTP 301, 302, 307, 308)
-      if ([301, 302, 307, 308].includes(proxyRes.statusCode) && proxyRes.headers.location) {
-        res.setHeader('Location', proxyRes.headers.location);
-        return res.status(proxyRes.statusCode).end();
-      }
-
-      const contentType = proxyRes.headers['content-type'] || 'application/json';
-      res.setHeader('Content-Type', contentType);
-      res.status(proxyRes.statusCode);
-
-      proxyRes.pipe(res);
+      redirect: 'follow',
     });
 
-    proxyReq.on('error', (err) => {
-      console.error('Erro de conexão no proxy:', err.message);
-      return res.status(502).json({ error: 'Erro ao conectar no servidor IPTV', details: err.message });
-    });
+    const contentType = response.headers.get('content-type') || 'text/plain';
+    const data = await response.arrayBuffer();
 
-    proxyReq.on('timeout', () => {
-      proxyReq.destroy();
-      return res.status(504).json({ error: 'Tempo limite esgotado ao conectar ao servidor IPTV' });
-    });
-
-    proxyReq.end();
+    res.setHeader('Content-Type', contentType);
+    return res.status(response.status).send(Buffer.from(data));
   } catch (error) {
-    return res.status(400).json({ error: 'URL inválida', details: error.message });
+    console.error('Erro no Proxy:', error);
+    return res.status(500).json({ error: 'Erro de conexão com o servidor', details: error.message });
   }
 }
