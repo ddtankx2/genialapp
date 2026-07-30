@@ -18,6 +18,14 @@ import {
   PUBLIC_SAMPLE_STREAMS
 } from '../data/demoData';
 
+// Proxy para contornar o bloqueio HTTPS -> HTTP da Vercel
+const fetchWithProxy = async (url: string) => {
+  if (url.startsWith('http://')) {
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+    return fetchWithProxy(proxyUrl);
+  }
+  return fetchWithProxy(url);
+};
 export function sanitizeXtreamUrl(url: string): string {
   if (!url) return '';
   let clean = url.trim();
@@ -49,7 +57,7 @@ export async function loginXtream(
   const targetUrl = `${cleanUrl}/player_api.php?username=${encodeURIComponent(username.trim())}&password=${encodeURIComponent(password.trim())}`;
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -146,7 +154,7 @@ export async function fetchLiveCategories(
   const targetUrl = `${cleanUrl}/player_api.php?username=${encodeURIComponent(username.trim())}&password=${encodeURIComponent(password.trim())}&action=get_live_categories`;
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -183,7 +191,7 @@ export async function fetchLiveStreams(
   }
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -212,7 +220,7 @@ export async function fetchVodCategories(
   const targetUrl = `${cleanUrl}/player_api.php?username=${encodeURIComponent(username.trim())}&password=${encodeURIComponent(password.trim())}&action=get_vod_categories`;
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -249,7 +257,7 @@ export async function fetchVodStreams(
   }
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -278,7 +286,7 @@ export async function fetchSeriesCategories(
   const targetUrl = `${cleanUrl}/player_api.php?username=${encodeURIComponent(username.trim())}&password=${encodeURIComponent(password.trim())}&action=get_series_categories`;
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -315,7 +323,7 @@ export async function fetchSeriesStreams(
   }
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -402,7 +410,7 @@ export async function fetchSeriesInfo(
   const targetUrl = `${cleanUrl}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&action=get_series_info&series_id=${seriesId}`;
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
@@ -482,7 +490,7 @@ export async function fetchShortEpg(
   const targetUrl = `${cleanUrl}/player_api.php?username=${encodeURIComponent(username.trim())}&password=${encodeURIComponent(password.trim())}&action=get_short_epg&stream_id=${streamId}&limit=10`;
 
   try {
-    const res = await fetch('/api/xtream/proxy', {
+    const res = await fetchWithProxy('/api/xtream/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ targetUrl })
