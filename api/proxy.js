@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Configuração dos cabeçalhos CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -8,16 +7,16 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const { url } = req.query;
+  // Extrai a URL completa preservando os parâmetros com & e ?
+  const rawUrl = req.url.split('url=')[1];
 
-  if (!url) {
+  if (!rawUrl) {
     return res.status(400).json({ error: 'URL necessária' });
   }
 
   try {
-    const targetUrl = decodeURIComponent(url);
+    const targetUrl = decodeURIComponent(rawUrl);
     
-    // Faz a requisição simulando um aplicativo IPTV para não tomar bloqueio/404
     const response = await fetch(targetUrl, {
       method: req.method,
       headers: {
@@ -27,8 +26,6 @@ export default async function handler(req, res) {
     });
 
     const data = await response.text();
-    
-    // Retorna o status original do servidor IPTV e o conteúdo
     return res.status(response.status).send(data);
   } catch (error) {
     return res.status(500).json({ error: 'Erro ao conectar no servidor IPTV' });
