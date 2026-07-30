@@ -19,7 +19,6 @@ export default async function handler(req, res) {
   try {
     let targetUrlString = decodeURIComponent(url);
 
-    // Garante protocolo HTTP se o usuário/frontend não enviou
     if (!targetUrlString.startsWith('http://') && !targetUrlString.startsWith('https://')) {
       targetUrlString = `http://${targetUrlString}`;
     }
