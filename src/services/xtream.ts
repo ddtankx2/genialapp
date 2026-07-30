@@ -29,9 +29,10 @@ const fetchWithProxy = async (url: string) => {
 export function sanitizeXtreamUrl(url: string): string {
   if (!url) return '';
   let clean = url.trim();
-  clean = clean.split('?')[0]; // drop query string
-  clean = clean.replace(/\/+(player_api\.php|get\.php|xmltv\.php|c\/?)?$/i, '');
-  clean = clean.replace(/\/+$/, '');
+  clean = clean.split('?')[0]; // remove query string
+  clean = clean.replace(/\/+(player_api\.php|get\.php|xmltv\.php|c\/?)?$/i, ''); // remove rotas conhecidas
+  clean = clean.replace(/\/+$/, ''); // remove todas as barras do final
+  
   if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
     clean = `http://${clean}`;
   }
