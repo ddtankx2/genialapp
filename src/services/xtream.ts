@@ -20,11 +20,9 @@ import {
 
 // Proxy para contornar o bloqueio HTTPS -> HTTP da Vercel
 const fetchWithProxy = async (url: string) => {
-  if (url.startsWith('http://')) {
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
-    return window.fetch(proxyUrl);
-  }
-  return window.fetch(url);
+  const proxyUrl = `/api/proxy?url=${encodeURIComponent(url)}`;
+  const response = await fetch(proxyUrl);
+  return response;
 };
 export function sanitizeXtreamUrl(url: string): string {
   if (!url) return '';
