@@ -1,0 +1,6 @@
+{
+  "name": "RedStream IPTV",
+  "description": "Aplicativo IPTV moderno e premium com suporte Xtream Codes, TV ao vivo, Filmes, Séries e Jogos do Dia com tabela do Brasileirão.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
